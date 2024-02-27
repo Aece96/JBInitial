@@ -1,0 +1,671 @@
+import tkinter as tk
+from tkinter import ttk
+from tkinter import messagebox
+import win32com.client as client
+import os
+from datetime import datetime, timedelta
+
+class SlicingGivenFrame(ttk.Frame)
+  def __init__(self, container):
+    ttk.Frame.__init__(self, container)
+    self.parent = container
+
+  def render(self):
+    self.ValueInput7 = tk.StringVar()
+    self.ValueInput8 = tk.StringVar()
+    self.ValueInput9 = tk.StringVar()
+    self.ValueInput10 = tk.StringVar()
+
+    self.ValueInput11 = tk.StringVar()
+    self.ValueInput12 = tk.StringVar()
+    self.ValueInput13 = tk.StringVar()
+    self.ValueInput14 = tk.StringVar()
+    self.ValueInput15 = tk.StringVar()
+
+    self.description_label2 = ttk.Label(self, text = 'Slicing Fields Given:')
+    self.descritpion_label2.grid(column=0, row = 5, padx=10, pady=10, sticky ="w")
+
+    self.inputLabelTemplateValName2 = ttk.Label(self, text = "Slicing Template Name:")
+    self.inputLabelTemplateValName2.grid(column = 0, row = 6, padx = 10, pady = 5, sticky = "nw")
+
+    self.inputLabel7 = ttk.Label(self, text = 'Header1")
+    self.inputLabel7.grid(column = 1, row = 6, padx = 10, pady=5, sticky = "nw")
+    self.inputLabel8 = ttk.Label(self, text = 'Header2")
+    self.inputLabel8.grid(column = 2, row = 6, padx = 10, pady=5, sticky = "nw")
+    self.inputLabel9 = ttk.Label(self, text = 'Header3")
+    self.inputLabel9.grid(column = 3, row = 6, padx = 10, pady=5, sticky = "nw")
+    self.inputLabel10 = ttk.Label(self, text = 'Header4")
+    self.inputLabel10.grid(column = 4, row = 6, padx = 10, pady=5, sticky = "nw")
+    self.inputLabel11 = ttk.Label(self, text = 'Header5")
+    self.inputLabel11.grid(column = 5, row = 6, padx = 10, pady=5, sticky = "nw")
+    self.inputLabel12 = ttk.Label(self, text = 'Header6")
+    self.inputLabel12.grid(column = 6, row = 6, padx = 10, pady=5, sticky = "nw")
+    self.inputLabel13 = ttk.Label(self, text = 'Header7")
+    self.inputLabel13.grid(column = 7, row = 6, padx = 10, pady=5, sticky = "nw")
+    self.inputLabel14 = ttk.Label(self, text = 'Header8")
+    self.inputLabel14.grid(column = 8, row = 6, padx = 10, pady=5, sticky = "nw")
+    self.inputLabel15 = ttk.Label(self, text = 'Header9")
+    self.inputLabel15.grid(column = 9, row = 6, padx = 10, pady=5, sticky = "nw")
+
+
+    self.InputTemplateValName2 = ttk.Entry(self, textvariable = self.inputLabelTemplateValName2)
+    self.InputTemplateValName2.grid(column = 0, row = 7, padx =10, pady = 10, sticky = "w")
+
+    self.Input7 = ttk.Entry(self, textvariable = self.ValueInput7)
+    self.Input7.grid(column = 1, row = 7, padx = 10, pady = 0, sticky = "w")
+
+    self.Input8 = ttk.Entry(self, textvariable = self.ValueInput8)
+    self.Input8.grid(column = 2, row = 7, padx = 10, pady = 0, sticky = "w")
+
+    self.Input9 = ttk.Entry(self, textvariable = self.ValueInput9)
+    self.Input9.grid(column = 3, row = 7, padx = 10, pady = 0, sticky = "w")
+
+    self.Input10 = ttk.Entry(self, textvariable = self.ValueInput10)
+    self.Input10.grid(column = 4, row = 7, padx = 10, pady = 0, sticky = "w")
+
+    self.Input11 = ttk.Entry(self, textvariable = self.ValueInput11)
+    self.Input11.grid(column = 5, row = 7, padx = 10, pady = 0, sticky = "w")
+
+    self.Input12 = ttk.Entry(self, textvariable = self.ValueInput12)
+    self.Input12.grid(column = 6, row = 7, padx = 10, pady = 0, sticky = "w")
+
+    self.Input13 = ttk.Entry(self, textvariable = self.ValueInput13)
+    self.Input13.grid(column = 7, row = 7, padx = 10, pady = 0, sticky = "w")
+
+    self.Input14 = ttk.Entry(self, textvariable = self.ValueInput14)
+    self.Input14.grid(column = 8, row = 7, padx = 10, pady = 0, sticky = "w")
+
+    self.Input15 = ttk.Entry(self, textvariable = self.ValueInput15)
+    self.Input15.grid(column = 9, row = 7, padx = 10, pady = 0, sticky = "w")
+
+  def getAllHeaderEntries(self):
+    ReturnedHeaderList = []
+    ReturnedHeaderList.append(self.inputLabel7.cget("text"))
+    ReturnedHeaderList.append(self.inputLabel8.cget("text"))
+    ReturnedHeaderList.append(self.inputLabel9.cget("text"))
+    ReturnedHeaderList.append(self.inputLabel10.cget("text"))
+    ReturnedHeaderList.append(self.inputLabel11.cget("text"))
+    ReturnedHeaderList.append(self.inputLabel12.cget("text"))
+    ReturnedHeaderList.append(self.inputLabel13.cget("text"))
+    ReturnedHeaderList.append(self.inputLabel14.cget("text"))
+    ReturnedHeaderList.append(self.inputLabel15.cget("text"))
+    return ReturnedHeaderList
+
+  def getWishedTemplateName(self):
+    ReturnedTemplateName = self.InputTemplateValName2.get()
+    returned ReturnedTemplateName
+
+  def getEntryValues(self):
+    ReturnedValueList = []
+    ReturnedValueList.append(self.Input7.get())
+    ReturnedValueList.append(self.Input8.get())
+    ReturnedValueList.append(self.Input9.get())
+    ReturnedValueList.append(self.Input10.get())
+    ReturnedValueList.append(self.Input11.get())
+    ReturnedValueList.append(self.Input12.get())
+    ReturnedValueList.append(self.Input13.get())
+    ReturnedValueList.append(self.Input14.get())
+    ReturnedValueList.append(self.Input15.get())
+    return ReturnedValueList
+
+
+class SlcingWishedFrame(ttk.Frame):
+  def __init__(self, container):
+    ttk.Frame.__init__(self,container)
+    self.parent = container
+
+  def render(self)
+    self.ValueInput16 = tk.StringVar()
+    self.ValueInput17 = tk.StringVar()
+    self.ValueInput18 = tk.StringVar()
+    self.ValueInput19 = tk.StringVar()
+    self.ValueInput20 = tk.StringVar()
+    self.ValueInput21 = tk.StringVar()
+    self.ValueInput22 = tk.StringVar()
+    self.ValueInput23 = tk.StringVar()
+    self.ValueInput24 = tk.StringVar()
+
+
+    self.description_label3 = ttk.Label(self, text = 'Slicing Fields Wished:')
+    self.descritpion_label3.grid(column=1, row = 8, padx=10, pady=10, sticky ="w")
+
+    self.inputLabel16 = ttk.Label(self, text = 'Header1")
+    self.inputLabel16.grid(column = 1, row = 9, padx = 10, pady=5, sticky = "nw")
+    self.inputLabel17 = ttk.Label(self, text = 'Header2")
+    self.inputLabel17.grid(column = 2, row = 9, padx = 10, pady=5, sticky = "nw")
+    self.inputLabel18 = ttk.Label(self, text = 'Header3")
+    self.inputLabel18.grid(column = 3, row = 9, padx = 10, pady=5, sticky = "nw")
+    self.inputLabel19 = ttk.Label(self, text = 'Header4")
+    self.inputLabel19.grid(column = 4, row = 9, padx = 10, pady=5, sticky = "nw")
+    self.inputLabel20 = ttk.Label(self, text = 'Header5")
+    self.inputLabel20.grid(column = 5, row = 9, padx = 10, pady=5, sticky = "nw")
+    self.inputLabel21 = ttk.Label(self, text = 'Header6")
+    self.inputLabel21.grid(column = 6, row = 9, padx = 10, pady=5, sticky = "nw")
+    self.inputLabel22 = ttk.Label(self, text = 'Header7")
+    self.inputLabel22.grid(column = 7, row = 9, padx = 10, pady=5, sticky = "nw")
+    self.inputLabel23 = ttk.Label(self, text = 'Header8")
+    self.inputLabel23.grid(column = 8, row = 9, padx = 10, pady=5, sticky = "nw")
+    self.inputLabel24 = ttk.Label(self, text = 'Header9")
+    self.inputLabel24.grid(column = 9, row = 9, padx = 10, pady=5, sticky = "nw")
+
+
+    self.Input16 = ttk.Entry(self, textvariable = self.ValueInput16)
+    self.Input16.grid(column = 2, row = 10, padx = 10, pady = 0, sticky = "w")
+
+    self.Input17 = ttk.Entry(self, textvariable = self.ValueInput17)
+    self.Input17.grid(column = 3, row = 10, padx = 10, pady = 0, sticky = "w")
+
+    self.Input18 = ttk.Entry(self, textvariable = self.ValueInput18)
+    self.Input18.grid(column = 4, row = 10, padx = 10, pady = 0, sticky = "w")
+
+    self.Input19 = ttk.Entry(self, textvariable = self.ValueInput19)
+    self.Input19.grid(column = 5, row = 10, padx = 10, pady = 0, sticky = "w")
+
+    self.Input20 = ttk.Entry(self, textvariable = self.ValueInput20)
+    self.Input20.grid(column = 6, row = 10, padx = 10, pady = 0, sticky = "w")
+
+    self.Input21 = ttk.Entry(self, textvariable = self.ValueInput21)
+    self.Input21.grid(column = 7, row = 10, padx = 10, pady = 0, sticky = "w")
+
+    self.Input22 = ttk.Entry(self, textvariable = self.ValueInput22)
+    self.Input22.grid(column = 8, row = 10, padx = 10, pady = 0, sticky = "w")
+
+    self.Input23 = ttk.Entry(self, textvariable = self.ValueInput23)
+    self.Input23.grid(column = 9, row = 10, padx = 10, pady = 0, sticky = "w")
+
+    self.Input24 = ttk.Entry(self, textvariable = self.ValueInput24)
+    self.Input24.grid(column = 10, row = 10, padx = 10, pady = 0, sticky = "w")
+
+  def getAllHeaderEntries(self):
+      ReturnedHeaderList = []
+      ReturnedHeaderList.append(self.inputLabel16.cget("text"))
+      ReturnedHeaderList.append(self.inputLabel17.cget("text"))
+      ReturnedHeaderList.append(self.inputLabel18.cget("text"))
+      ReturnedHeaderList.append(self.inputLabel19.cget("text"))
+      ReturnedHeaderList.append(self.inputLabel20.cget("text"))
+      ReturnedHeaderList.append(self.inputLabel21.cget("text"))
+      ReturnedHeaderList.append(self.inputLabel22.cget("text"))
+      ReturnedHeaderList.append(self.inputLabel23.cget("text"))
+      ReturnedHeaderList.append(self.inputLabel24.cget("text"))
+      return ReturnedHeaderList
+
+  def getEntryValues(self):
+    ReturnedValueList = []
+    ReturnedValueList.append(self.Input16.get())
+    ReturnedValueList.append(self.Input17.get())
+    ReturnedValueList.append(self.Input18.get())
+    ReturnedValueList.append(self.Input19.get())
+    ReturnedValueList.append(self.Input20.get())
+    ReturnedValueList.append(self.Input21.get())
+    ReturnedValueList.append(self.Input22.get())
+    ReturnedValueList.append(self.Input23.get())
+    ReturnedValueList.append(self.Input24.get())
+    return ReturnedValueList
+
+class OutlookFrame(ttk.Frame):
+  def __init__(self, container):
+    ttk.Frame.__init__(self, container)
+    self.parent = container
+
+  def render(self):
+    self.ValueInput1 = tk.StringVar()
+    self.ValueInput2 = tk.StringVar()
+    self.ValueInput3 = tk.StringVar()
+    self.ValueInput4 = tk.StringVar()
+    self.ValueInput5 = tk.StringVar()
+    self.ValueInput6 = tk.StringVar()
+    self.TemplateNameValInput = tk.StringVar()
+
+    self.description_label = ttk.Label(self, text = "Outlook Template Input Fields:")
+    self.description_label.grid(column = 0, row = 2, padx = 10, pady = 10, sticky = "nw")
+
+    self.inputLabelTemplateValName = ttk.Label(self, text = "OUtlook Template Name:")
+    self.inputLabelTemplateValName.grid(column = 0, row = 3, adx = 10, pady = 5, sticky = "nw")
+
+    self.inputLabel1 = ttk.Label(self, text = 'Subject')
+    self.inputLabel1.grid(column = 1, row = 3, padx = 10, pady=5, sticky = "nw")
+    self.inputLabel2 = ttk.Label(self, text = 'OutlookProcessedFolder")
+    self.inputLabel2.grid(column = 2, row = 3, padx = 10, pady=5, sticky = "nw")
+    self.inputLabel3 = ttk.Label(self, text = 'ExplorerFolder")
+    self.inputLabel3.grid(column = 3, row = 3, padx = 10, pady=5, sticky = "nw")
+    self.inputLabel4 = ttk.Label(self, text = 'Inbox")
+    self.inputLabel4.grid(column = 4, row = 3, padx = 10, pady=5, sticky = "nw")
+    self.inputLabel5 = ttk.Label(self, text = 'NumberofMessages")
+    self.inputLabel5.grid(column = 5, row = 3, padx = 10, pady=5, sticky = "nw")
+    self.inputLabel6 = ttk.Label(self, text = 'Gruppenfolder")
+    self.inputLabel6.grid(column = 6, row = 3, padx = 10, pady=5, sticky = "nw")
+
+    self.InputTemplateValName = ttk.Entry(self, textvariable = self.inputLabelTemplateValName)
+    self.InputTemplateValName.grid(column = 0, row = 4, padx = 10, pady = , sticky = "nw")
+
+    self.Input1 = ttk.Entry(self, textvariable = self.ValueInput1)
+    self.Input1.grid(column = 1, row = 4, padx = 10, pady = 0, sticky = "w")
+
+    self.Input2 = ttk.Entry(self, textvariable = self.ValueInput2)
+    self.Input2.grid(column = 2, row = 4, padx = 10, pady = 0, sticky = "w")
+
+    self.Input3 = ttk.Entry(self, textvariable = self.ValueInput3)
+    self.Input3.grid(column = 3, row = 4, padx = 10, pady = 0, sticky = "w")
+
+    self.Input4 = ttk.Entry(self, textvariable = self.ValueInput4)
+    self.Input4.grid(column = 4, row = 4, padx = 10, pady = 0, sticky = "w")
+
+    self.Input5 = ttk.Entry(self, textvariable = self.ValueInput5)
+    self.Input5.grid(column = 5, row = 4, padx = 10, pady = 0, sticky = "w")
+
+    self.Input6 = ttk.Entry(self, textvariable = self.ValueInput6)
+    self.Input6.grid(column = 6, row = 4, padx = 10, pady = 0, sticky = "w")
+
+   def getAllHeaderEntries(self):
+        ReturnedHeaderList = []
+        ReturnedHeaderList.append(self.inputLabel1.cget("text"))
+        ReturnedHeaderList.append(self.inputLabel2.cget("text"))
+        ReturnedHeaderList.append(self.inputLabel3.cget("text"))
+        ReturnedHeaderList.append(self.inputLabel4.cget("text"))
+        ReturnedHeaderList.append(self.inputLabel5.cget("text"))
+        ReturnedHeaderList.append(self.inputLabel6.cget("text"))
+        return ReturnedHeaderList
+
+
+  def getWishedTemplateName(self):
+    ReturnedTemplateName = self.InputTemplateValName.get()
+    return ReturnedTemplateName
+
+  def getEntryValues(self):
+    ReturnedValueList = []
+    ReturnedValueList.append(self.Input1.get())
+    ReturnedValueList.append(self.Input2.get())
+    ReturnedValueList.append(self.Input3.get())
+    ReturnedValueList.append(self.Input4.get())
+    ReturnedValueList.append(self.Input5.get())
+    ReturnedValueList.append(self.Input6.get())
+    return ReturnedValueList
+
+
+class NAVFrame(ttk.Frame):
+  def __init__(self, container):
+    ttk.Frame.__init__(self, container):
+    self.parent = container
+
+  def render(self):
+    self.ValueInput25 = tk.StringVar()
+    self.ValueInput26 = tk.StringVar()
+    self.ValueInput27 = tk.StringVar()
+
+    self.description_label = ttk.Label(self, text = 'NAV Template Input Fields:')
+    self.description_label.grid(column = 0, row = 11, padx = 10, pady = 5, sticky = "nw")
+
+    self.inputLabelTemplateValName = ttk.Label(self, text = "NAV Template Name:")
+    self.inputLabelTemplateValName.grid(column = 0, row = 12, padx = 10, pady = 5, sticky = "nw")
+
+    self.inputLabel1 = ttk.Label(self, text = "Filename")
+    self.inputLabel1.grid(column = 1, row = 12, padx = 10, pady = 5, sticky = "nw")
+
+    self.inputLabel2 = ttk.Label(self, text = "FileExtension")
+    self.inputLabel2.grid(column = 2, row = 12, padx = 10, pady = 5, sticky = "nw")
+
+    self.inputLabel3 = ttk.Label(self, text = "CutOff")
+    self.inputLabel3.grid(column = 3, row = 12, padx = 10, pady = 5, sticky = "nw")
+
+
+    self.InputTemplateValName = ttk.Entry(self, textvariable = self.inputLabelTemplateValName)
+    self.InputTemplateValName.grid(column = 0, row = 13, padx = 10, pady = 0, sticky = "w")
+
+    self.Input25 = ttk.Entry(self, textvairable = self.ValueInput25)
+    self.Input25.grid(column = 1, row = 13, padx = 10, pady = 0, sticky = "w")
+
+    self.Input26 = ttk.Entry(self, textvariable = self.ValueInput26)
+    self.Input26.grid(column = 2, row = 13, padx = 10, pady = , sticky = "w")
+
+    self.Input27 = ttk.Entry(self, textvariable = self.ValueInput27)
+    self.Input27.grid(column = 3, row = 13, padx = 10, pady = , sticky = "w")
+
+  def getAllHeaderEntries(self):
+    ReturnedHeaderList = []
+    ReturnedHeaderList.append(self.inputLabel1.cget("text"))
+    ReturnedHeaderList.append(self.inputLabel2.cget("text"))
+    ReturnedHeaderList.append(self.inputLabel3.cget("text"))
+    return ReturnedHeaderList
+
+  def getEntryValues(self):
+    ReturnedValueList = []
+    ReturnedValueList.append(self.Input25.get())
+    ReturnedValueList.append(self.Input26.get())
+    ReturnedValueList.append(self.Input27.get())
+    return ReturnedValueList
+
+  def getWishedTemplateName(self):
+    ReturnedTemplateName = self.InputTemplateValName.get()
+    return ReturnedTemplateName
+
+class BaseSelectionFrame(ttk.Frame):
+  def __init__(self, container):
+    ttk.Frame.__init__(self, container)
+    self.parent = container
+    self.selectedProcessVar = tk.StringVar()
+
+  def render(self):
+    self.parent.getProcessOptions()
+    self.parent.optionMenu = ttk.OptionMenu(self, self.selectedProcessVar, *self.parent.ProcessOptions, command = self.dynamicrender)
+    self.parent.optionMenu.grid(column = 1, row = 1, padx = 10, pady = 10, sticky = "nw")
+
+    self.parent.buttonRun = ttk.Button(self, text = 'create Template', command = self.CreateDatabaseEntry)
+    self.parent.buttonRun.grid(column = 1, row = 1, padx = 10, pady = 10, sticky = "nw")
+
+  def CreateDatabaseEntry(self):
+    self.parent.CreateDatabaseEntry(self.selectedProcessVar.get())
+
+  def dynamicrender(self, *args):
+    if self.selectedProcessVar.get() == "Outlook":
+      self.parent.clear()
+      self.parent.initializer(self.parent.OutlookWidget)
+    if self.selectedProcessVar.get() == "Converter":
+      self.parent.clear()
+      self.parent.initializer(self.parent.SlicingWidgetGiven)
+      self.parent.initializer(self.parent.SlicingWidgetWished)
+    if self.selectedProcessVar.get() == "NAVProcess":
+      self.parent.clear()
+      self.parent.initializer(self.parent.OutlookWidget)
+      self.parent.initializer(self.parent.SlicingWidgetGiven)
+      self.parent.initializer(self.parent.SlicingWidgetWished)
+      self.parent.initializer(self.parent.NAVWidget)
+
+
+class TemplateCreationView(ttk.Frame):
+  def __init__(self, container):
+    super().__init__(container)
+
+    self.controller = None
+    self.ProcessOptions = ['Select a process']
+    self.Base = BaseSelectionFrame(self)
+    self.NAVWidget = OutlookFrame(self)
+    self.SlicingWidgetGiven = SlicingGivenFrame(self)
+    self.SlicingWidgetWished = SlicingWishedFrame(self)
+
+    self.SelectedProcess = None
+
+  def render(self):
+    self.initializer(self.Base)
+
+  def initializer(self, widget):
+    widget.render()
+    widget.grid()
+
+  def clear(self):
+    self.OutlookWidget.destroy()
+    self.SlicingWidgetGiven.destroy()
+    self.SlicingWidgetWished.destroy()
+    self.NAVWidget = NAVFrame(self)
+
+  def getProcessOptions(self):
+    ProcessList = self.controller.getProcessOptions()
+    for i in ProcessList:
+      self.ProcessOptions.append(i)
+
+  def set_controller(self, controller):
+    self.controller = controller
+
+  def CreateDatabaseEntry(self, Process):
+    self.SelectedProcess = Process
+    self.controller.startCreationProcess()
+
+  def getHeaderList(self):
+    if self.SelectedProcess == "Outlook":
+      ReturnedList = []
+      ReturnedList.append(list(self.OutlookWidget.getAllHeaderEntries())))
+      return ReturnedList
+
+    if self.SelectedProcess == "Converter":
+      pass
+
+    if self.SelectedProcess == "NAVProcess":
+      ReturnedList = []
+      ReturnedList.append(self.OutlookWidget.getAllHeaderEntries())
+      ReturnedList.append(self.SlicingWidgetGiven.getAllHeaderEntries())
+      ReturnedList.append(self.SlicingWidgetWished.getAllHeaderEntries())
+      ReturnedList.append(self.NAVWidget.getAllHeaderEntries())
+      return ReturnedList
+
+  def getWishedTemplateName(self):
+    if self.SelectedProcess == "Outlook":
+      ReturnedList = []
+      ReturnedList.append(self.OutlookWidget.getWishedTemplateName())
+      return ReturnedList
+
+    if self.SelectedProcess = "Converter":
+      pass
+
+    if self.SelectedProcess = "NAVProcess":
+      ReturnedList = []
+      ReturnedList.append(self.OutlookWidget.getWishedTemplateName())
+      ReturnedList.append(self.SlicingWidgetGiven.getWishedTemplateName())
+      ReturnedList.append(self.NAVWidget.getWishedTemplateName())
+      return ReturnedList
+
+  def getEntryValues(self):
+      if self.SelectedProcess == "Outlook":
+        ReturnedList = []
+        ReturnedList.append(self.OutlookWidget.getEntryValues())
+        return ReturnedList
+
+      if self.SelectedProcess == "Converter":
+        pass
+
+      if self.SelectedProcess == "NAVProcess":
+        ReturnedList.append(self.OutlookWidget.getEntryValues())
+        ReturnedList.append(self.SlicingWidgetGiven.getEntryValues())
+        ReturnedList.append(self.SlicingWidgetWished.getEntryValues())
+        ReturnedList.append(self.NAVWidget.getEntryValues())
+        return ReturnedList
+
+class OutlookView(ttk.Frame):
+  def __init__(self, container):
+    super().__init__(container)
+
+    self.controller = None
+    self.TemplateOptions = ['select a Template']
+    self.CurrentTemplateInputs = []
+    self.selectedTemplateVar = tk.StringVar()
+    self.ValueInput1 = tk.StringVar()
+    self.ValueInput2 = tk.StringVar()
+    self.ValueInput3 = tk.StringVar()
+    self.ValueInput4 = tk.StringVar()
+    self.ValueInput5 = tk.StringVar()
+    self.ValueInput6 = tk.StringVar()
+    self.ValueList = []
+
+  def Outlook_Connector(self):
+    outlookInterface = client.Dispatch('Outlook.Application').GetNameSpace('MAPI')
+    return outlookInterface
+
+  def displayInfoMessage(self):
+    message = self.showIndexInfo("Depotbankkontrolle)
+    messagebox.showinfo("Check which integer relates to Inbox", "\n".join(message), icon = 'info')
+
+  def showIndexINfo(self, Gruppenmail):
+    outlook = self.Outlook_Connector()
+    textbox = []
+    for i in range(1,10):
+      root_Folder = outlook.Folders[Gruppenmail].Folders[str(i)]
+      textbox.append("Chekcing indexes for Groupfolder: Index: {} realtes to Folder {}".format(i, root_Folder))
+    return textbox
+
+  def UpdateWildcards(self):
+    pass
+
+  def render(self):
+    self.getTemplateOptions()
+
+    self.description_label = ttk.Label(self, text = 'Templates:')
+    self.description_label.grid(column = 1, row = 1)
+
+
+    self.inputLabel1 = ttk.Label(self, text = "Subject:")
+    self.inputLabel1.grid(column = 2, row = 3, padx = 10, pady = 5)
+    self.inputLabel2 = ttk.Label(self, text = "OutlookProcessedFolder:")
+    self.inputLabel2.grid(column = 3, row = 3, padx = 10, pady = 5)
+    self.inputLabel3 = ttk.Label(self, text = "ExplorerFolder:")
+    self.inputLabel3.grid(column = 4, row = 3, padx = 10, pady = 5)
+    self.inputLabel4 = ttk.Label(self, text = "Inbox:")
+    self.inputLabel4.grid(column = 5, row = 3, padx = 10, pady = 5)
+    self.inputLabel5 = ttk.Label(self, text = "NumberofMessages:")
+    self.inputLabel5.grid(column = 6, row = 3, padx = 10, pady = 5)
+    self.inputLabel6 = ttk.Label(self, text = "Gruppenfolder:")
+    self.inputLabel6.grid(column = 7, row = 3, padx = 10, pady = 5)
+
+    self.currentTemplateLabel1 = ttk.Label(self, text = 'select a template')
+    self.currentTemplateLabel1.grid(column = 2, row = 5, padx = 10, pady = 5)
+    self.currentTemplateLabel2 = ttk.Label(self, text = 'select a template')
+    self.currentTemplateLabel2.grid(column = 3, row = 5, padx = 10, pady = 5)
+    self.currentTemplateLabel3 = ttk.Label(self, text = 'select a template')
+    self.currentTemplateLabel3.grid(column = 4, row = 5, padx = 10, pady = 5)
+    self.currentTemplateLabel4 = ttk.Label(self, text = 'select a template')
+    self.currentTemplateLabel4.grid(column = 5, row = 5, padx = 10, pady = 5)
+    self.currentTemplateLabel5 = ttk.Label(self, text = 'select a template')
+    self.currentTemplateLabel5.grid(column = 6, row = 5, padx = 10, pady = 5)
+    self.currentTemplateLabel6 = ttk.Label(self, text = 'select a template')
+    self.currentTemplateLabel6.grid(column = 7, row = 5, padx = 10, pady = 5)
+
+    self.optionMenu = ttk.OptionMenu(self, self.selectedTemplateVar, *self.TemplateOptions)
+    self.optionMenu.grid(column = 1, row = 2, padx = 10, pady = 10)
+
+    self.Input1 = ttk.Entry(self, textvariable = self.ValueInput1)
+    self.Input1.grid(column = 2, row = 6, padx = 10, pady = 0)
+
+    self.Input2 = ttk.Entry(self, textvariable = self.ValueInput2)
+    self.Input2.grid(column = 3, row = 6, padx = 10, pady = 0)
+
+    self.Input3 = ttk.Entry(self, textvariable = self.ValueInput3)
+    self.Input3.grid(column = 4, row = 6, padx = 10, pady = 0)
+
+    self.Input4 = ttk.Entry(self, textvariable = self.ValueInput4)
+    self.Input4.grid(column = 5, row = 6, padx = 10, pady = 0)
+
+    self.Input5 = ttk.Entry(self, textvariable = self.ValueInput5)
+    self.Input5.grid(column = 6, row = 6, padx = 10, pady = 0)
+
+    self.Input6 = ttk.Entry(self, textvariable = self.ValueInput6)
+    self.Input6.grid(column = 7, row = 6, padx = 10, pady = 0)
+
+    self.buttonRun = ttk.Button(self, text = 'run Template', command = self.runTemplate)
+    self.buttonRun.grid(column = 2, row = 2, padx = 10, pady = 10)
+
+    self.buttonAdapt = ttk.Button(self, text = 'adapt Template', command = self.adaptTemplate)
+    self.buttonAdapt.grid(column = 1, row = 6, padx = 10, pady = 10)
+
+    self.buttonShow = ttk.Button(self, text = 'show current', command = self.getCurrentTemplate)
+    self.buttonShow.grid(column = 1, row = 5, padx = 10, pady = 10)
+
+    self.buttonAdapt = ttk.Button(self, text = 'adapt Template', command = self.displayInfoMessage)
+    self.buttonAdapt.grid(column = 1, row = 7, padx = 10, pady = 10)
+
+    self.buttonAdapt = ttk.Button(self, text = 'update date', command = self.dynamicDateUpdate)
+    self.buttonAdapt.grid(column = 1, row = 8, padx = 10, pady = 10)
+
+  def set_controller(self, controller):
+    self.controller = controller
+
+  def adaptTemplate(self):
+    self.ValueList = []
+    self.ValueList.append(self.Input1.get())
+    self.ValueList.append(self.Input2.get())
+    self.ValueList.append(self.Input3.get())
+    self.ValueList.append(self.Input4.get())
+    self.ValueList.append(self.Input5.get())
+    self.ValueList.append(self.Input6.get())
+    self.controller.adaptTemplate(self.ValueList)
+
+  def getTemplateOptions(self):
+    optionList = self.controller.getTemplateOptions()
+    for i in optionList:
+      self.TemplateOptions.append(i)
+
+  def getCurrentTemplate(self):
+    self.CurrentTemplateInputs = self.controller.getCurrentTemplate(self.selectedTEmplateVar.get())
+    self.updateTemplateLabels()
+
+    self.currentTemplateLabel1 = ttk.Label(self, text = self.CurrentTemplateInputs[0])
+    self.currentTemplateLabel1.grid(column = 2, row = 5, padx = 10, pady = 5)
+    self.currentTemplateLabel2 = ttk.Label(self, text = self.CurrentTemplateInputs[1])
+    self.currentTemplateLabel2.grid(column = 3, row = 5, padx = 10, pady = 5)
+    self.currentTemplateLabel3 = ttk.Label(self, text = self.CurrentTemplateInputs[2])
+    self.currentTemplateLabel3.grid(column = 4, row = 5, padx = 10, pady = 5)
+    self.currentTemplateLabel4 = ttk.Label(self, text = self.CurrentTemplateInputs[3])
+    self.currentTemplateLabel4.grid(column = 5, row = 5, padx = 10, pady = 5)
+    self.currentTemplateLabel5 = ttk.Label(self, text = self.CurrentTemplateInputs[4)
+    self.currentTemplateLabel5.grid(column = 6, row = 5, padx = 10, pady = 5)
+    self.currentTemplateLabel6 = ttk.Label(self, text = self.CurrentTemplateInputs[5])
+    self.currentTemplateLabel6.grid(column = 7, row = 5, padx = 10, pady = 5)
+
+  def updateTemplateLabels(self):
+    self.currentTemplateLabel1.config(text = '')
+    self.currentTemplateLabel1.config(text = '')
+    self.currentTemplateLabel1.config(text = '')
+    self.currentTemplateLabel1.config(text = '')
+    self.currentTemplateLabel1.config(text = '')
+    self.currentTemplateLabel1.config(text = '')
+
+  def dynamicDateUpdate(self):
+    updateString = self.dynamicDate()
+    updateStringList = []
+    updateStringList.append(updateString)
+    updateStringList.append(self.Input2.get())
+    updateStringList.append(self.Input3.get())
+    updateStringList.append(self.Input4.get())
+    updateStringList.append(self.Input5.get())
+    updateStringList.append(self.Input6.get())
+    self.controller.adaptTemplat(updateStringList)
+
+  def dynamicDate(self):
+    numericList = []
+
+    self.CurrentTemplateInputs = self.controller.getCurrentTemplate(self.selectedTemplateVar.get())
+
+    Subject = self.CurrentTemplateInputs[0]
+    indx = 0
+    for i in Subject:
+      if i.isdigit():
+        numericList.append(idx)
+      else:
+        pass
+      indx += 1
+    yesterday = datetime.now() - timedelta(1)
+    SubjectNew = Subject[0:numericList[0]] + yesterday.strftime("%Y%m%d") + Subject[numericList[len(numericList)-1]+1:len(Subject)]
+    return SubjectNew
+
+  def runTemplate(self):
+    self.controller.runTemplate()
+
+class NAVProcessView(ttk.Frame):
+  def __init__(self, container):
+    super().__init__(container)
+    self.Controller = None
+    self.TemplateOptions = []
+
+  def render(self):
+    self.getTemplateOptions()
+    self.description_label = ttk.Label(self, text = 'NAV Templates:')
+    self.description_label.grid(column = 1, row = 1)
+    self.lst = tk.Listbox(self, selectmode = "multiple")
+    self.lst.grid(column = 1, row = 2, row = 10, pady = 0)
+    for each_item_ind in range(0, len(self.TemplateOptions)):
+      self.lst.insert(each_item_ind, self.TemplateOptions[each_item_ind])
+    self.buttonShow = ttk.Button(self, text = 'Run Selection', command = self.runTemplates)
+    self.buttonShow.grid(column = 1, row =6, padx = 10, pady = 10)
+
+  def set_controller(self, controller):
+    self.controller = controller
+
+  def getTemplateOptions(self):
+    optionList = self.controller.getTemplateOptions()
+    for i in optionList:
+      self.TemplateOptions.append(i)
+
+  def getSelectedTemplateOptions(self):
+    selectedOptions = []
+    for selected_ind in self.lst.curselection():
+      selectedOptions.append(self.lst.get(selected_ind))
+    return selectedOptions
+
+  def runTemplates(self):
+    self.controller.runTemplates()

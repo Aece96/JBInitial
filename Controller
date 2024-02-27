@@ -1,0 +1,138 @@
+from abc import ABC, abstractmethod
+import TemplateFactory as TFactory
+import NAVRouter
+import AccessKeyLogger
+
+class TemplateCreator(ABC):
+
+  @abstractmethod
+  def factory_method(self):
+    pass
+
+class TCVController():
+  def __init__(self, model, view, DatabaseAPI):
+    self.model = model
+    self.view = view
+    self.DatabaseAPI = DatabaseAPI
+
+    self.CreationPrimaryKey = None
+    self.Process = None
+
+  def getProcessOptions(self):
+    return self.model.getProcessNames()
+
+  def render(self):
+    self.view.render()
+
+  def getValidPrimaryKey(self, WishedTemplateName):
+    accessKeyLogger = AccessKeyLogger.AccessKeyLogger(self.view.SelectedProcess, self.DatabaseAPI)
+    self.CreationPrimaryKey = accessKeyLogger.setValidPrimaryKey(WishedTemplateName)
+    return self.CreationPrimaryKey
+
+  def startCreationProcess(self):
+    self.CreationProcess()
+
+  def CreationProcess(self):
+    if self.view.SelectedProcess == "Outlook":
+      self.model.setTablenameTemplates(["OutlookTemplates"])
+      self.model.setTablenameInputs(["OutlookTemplateInputs"])
+      self.model.setHeaderList(self.view.getHeaderList())
+      self.model.setEntryValues(self.view.getEntryValues())
+      self.model.setFreePrimaryKey(self.getValidPrimaryKey(self.view.getWIshedTemplateName()))
+      self.model.setTemplateName(self.view.getWishedTemplateName())
+      self.model.PopulateMainDict(["OutlookID"])
+      self.model.PopulateValDict(["OutlookID"])
+      self.model.clearMainDict()
+      self.model.clearValDict()
+      self.model.CreateDatabaseEntry()
+    elif self.view.SelectedProcess == "Converter":
+      pass
+    elif self.view.SelectedProcess == "NAVProcess":
+      self.model.setTablenameTemplates(["OutlookTemplates", "SlicingTemplates", "NAVTemplates"])
+      self.model.setTablenameInputs(["OutlookTemplateInputs", "FileSlicingHeaderGiven", "FileSlicingHeaderWished", "NAVTemplatesInputs"])
+      self.model.setHeaderList(self.view.getHeaderList())
+      self.model.setEntryValues(self.view.getEntryValues())
+      self.model.setFreePrimaryKey(self.getValidPrimaryKey(self.view.getWIshedTemplateName()))
+      self.modle.setTemplateName(self.view.getWIshedTemplateName())
+      self.model.PopulateMainDict(["OutlookID", "ID", "NAVID"])
+      self.model.PopulateValDict(["OutlookID", "ID", "ID", "NAVID"])
+      self.model.clearMainDict()
+      self.model.clearValDict()
+      self.model.CreateDatabaseEntry()
+
+
+class NAVController(TemplateCreator):
+  def __init__(self, model, view, API):
+    self.model = model
+    self.view = view
+    self.API = API
+    self.selectedTemplates = []
+    self.NAVIDs = []
+    self.TemplateInputs = []
+    self.ConvertedTemplateInputs = None
+
+  def render(self):
+    self.view.render()
+
+  def factory_method(self):
+    return Tfactory.NAVProcessTemplate()
+
+  def getTemplateOptions(self):
+    return self.model.getTemplateNames()
+
+  def runTemplates(self):
+    self.selectedTemplates = self.view.getSelectedTemplateOptions()
+    self.NAVIDs = self.model.getNAVIDValues(self.selectedTemplates)
+    self.TemplateINputs = self.model.getTemplateInputs(self.NAVIDs)
+    router = NAVRouter(self.TemplateInputs, self.API)
+    self.ConvertedTemplateINputs = router.transformNAVInputs()
+    template = self.factory_method()
+    template.run_template_method(self.ConvertedTemplateInputs)
+    
+  def getselectedINputs(self):
+    self.selectedTemplates = self.view.getSelectedTemplateOptions()
+    if len(self.selectedTemplates) > 1:
+      pass
+    else:
+      Val_list = []
+      NAVIDs = self.model.getNAVIDValues(self.selectedTemplates)
+      self.TemplateINputs = self.model.getTemplateInputs(self.NAVIDs)
+
+
+class OutlookController(TemplateCreator):
+  def __init__(self, model, view):
+    self.model = model
+    self.view = view
+
+  def factory_method(self):
+    return Tfactory.OutlookProcessTemplate()
+
+  def getTemplateOptions(self, selectedTemplate):
+    return self.model.getTemplateList()
+
+  def getCurrentTemplate(self, selectedTemplate):
+    return self.model.getTemplateInputs(selectedTemplate)
+
+  def adaptTemplate(self, ValueList):
+    TemplateName = self.view.selectedTemplateVar.get()
+    self.model.adaptTemplateInputs(TemplateName, ValueList)
+    self.view.getCurrentTemplate()
+
+  def render(self):
+    self.view.render()
+
+  def runTemplate(self):
+    TemplateName = self.view.selectedTemplateVar.get()
+    val_list = self.model.getTemplateInputs(TemplateName)
+    key_list = self.model.getInputHeadersPKless(TemplateName)
+    value_list = self.listCaster(val_list)
+    val_dict = {key:value for key, value in zip(key_list, value_list)}
+
+    template= self.factory_method()
+    template.run_template_method(val_dict)
+
+  def listCaster(self, lst):
+    return [[el] for el in lst]
+    
+  
+      

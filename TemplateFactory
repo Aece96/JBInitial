@@ -1,0 +1,244 @@
+from abc import ABC, abstractmethod
+import win32.com.client as client
+import os
+import glob
+import pandas as pd
+
+class MyTemplateFactoryInterface(ABC):
+  @abstractmethod
+  def run_template_method():
+    pass
+
+class OutlookProcessTemplate(MyTemplateFactoryInterface):
+  def run_template_method(self, DataSet):
+    self.Outlook_Connector()
+    self.movingAttachments(DataSet)
+    return print("TemplateMethod finished")
+
+  def Outlook_Connector(self):
+    outlookInterface = client.Dispatch('Outlook.Application').GetNameSPACE('MAPI')
+    return outlookInterface
+
+  def searchingSubjects(self, term, folder, notRelevant, numberOfmessages):
+    relevant_messages = [message for message in folder.Items if term == message.Subject and folder.Name != notRelevant]
+    subfolder_count = folder.Folders.count
+    if len(relevant_messages) == numberOfmessages:
+      return relevant_messages
+    elif subfolder_count > 0 and len(relevant_messages) < numberOfmessages:
+      for subfolder in folder.Folders:
+        relevant_messages.extend(self.searchingSubjects(term, subfolder, notRelevant, numberOfmessages-len(relevant_messages)))
+    return relevant_messages
+
+  def movingAttachments(self,DataSet):
+    outlook = self.Outlook_Connector()
+    row_count = [len([value for value in DataSet[key]]) for key in DataSet.keys()][0]
+    moved_counter = 0
+    for i in range(0, row_count):
+      NumberOfMessages = DataSet["NumberofMessages"][i]
+      subject = DataSet["Subject"][i]
+      root_Folder = outlook.Folders[str(DataSet["Gruppenfolder][i])].Folder[str(DataSet["Inbox"][i])]
+      processed_Folder = outlookFolders[str(DataSet["OutlookProcessedFolder"][i])]
+      Already_Processed = DataSet["OutlookProcessedFolder"][i]
+      relevant_messages = self.searchingSubjects(subject, root_Folder, AlreadyProcessed, NumberOfMessages)
+      move_to_explorer = DataSet["ExplorerFolder"][i]
+    
+    for msg in relevant_messages:
+      for attachment in msg.Attachments:
+        if attachment.FileName[-3:] == 'csv':
+          attachment.SaveASFile(os.path.join(move_to_explorer, attachment.FileName))
+        elif attachment.FileName[-3:] == 'xls':
+          attachment.SaveASFile(os.path.join(move_to_explorer, attachment.FileName))
+        elif attachment.FileName[-4:] == 'xlsx':
+          attachment.SaveASFile(os.path.join(move_to_explorer, attachment.FileName))
+        elif attachment.FileName[-4:] == 'xlsm':
+          attachment.SaveASFile(os.path.join(move_to_explorer, attachment.FileName))
+        else:
+          pass
+      if moved_counter <= NumberOfMessages:
+        msg.Move(processed_Folder)
+        moved_counter += 1
+
+
+class NAVProcessTemplate(MyTemplateFactoryInterface):
+  def __init__(self):
+    self.WorkbookFilePath = "Some Path"
+    self.OutlookDataSet = None
+    self.SlicingDataSet = None
+    self.Filenames = None
+    self.FileExtensions = None
+    self.cut_off = NOne
+    self.DataFrameHolder = []
+    self.DataFrameSliced = []
+
+  def run_template_method(self, DataSet):
+    self.SeparateDataInputs(DataSet)
+    self.OutlookConnector()
+    
+    for InputIndx in range(len(self.OutlookDataSet)):
+      self.movingAttachments(self.OutlookDataSet[InputIndx])
+      self.mergeFiles(self.OutlookDataSet[InputIndx]['ExplorerFolder'], self.cut_off[InputIndx])
+      self.deleteFilelist(self.OutlookDataSet[InputIndx]['ExplorerFolder'])
+    
+    for InputInd in range(len(self.OutlookDataSet)):
+      self.sliceDateframes(InputInd)
+
+    for InputInx in range(len(self.Filenames)):
+      try:
+        self.DataFramesSliced[InputInx]['Dataframe'].to_excel(self.WorkbookFilePath + self.Filenames[InputInx] + self.FileExtensions[InputInx], index = False)
+      except:
+        self.DataFramesSliced[InputInx]['Dataframe'].to_csv(self.WorkbookFilePath + self.Filenames[InputInx] + self.FileExtensions[InputInx], index = False, sep = ';')
+    self.removeEmptySpaceTrails()
+    return print("TemplateMethod finished")
+
+  def SeparateDataInputs(self, DataSet):
+    self.OutlookDataSet = DataSet["Outlook"]
+    self.SlicingDataSet = DataSet["SlicingInputs"]
+    self.Filenames = DataSet["Filenames"]
+    self.FileExtensions = DataSet["FileExtensions"]
+    self.cut_off = DataSet['cut_off']
+
+  def Outlook_Connector(self):
+    outlookInterface = client.Dispatch('Outlook.Application').GetNameSPACE('MAPI')
+    return outlookInterface
+
+  def searchingSubjects(self, term, folder, notRelevant, numberOfmessages):
+    relevant_messages = [message for message in folder.Items if term == message.Subject and folder.Name != notRelevant]
+    subfolder_count = folder.Folders.count
+    if len(relevant_messages) == numberOfmessages:
+      return relevant_messages
+    elif subfolder_count > 0 and len(relevant_messages) < numberOfmessages:
+      for subfolder in folder.Folders:
+        relevant_messages.extend(self.searchingSubjects(term, subfolder, notRelevant, numberOfmessages-len(relevant_messages)))
+    return relevant_messages
+
+  def movingAttachments(self,DataSet):
+    outlook = self.Outlook_Connector()
+    row_count = [len([value for value in DataSet[key]]) for key in DataSet.keys()][0]
+    moved_counter = 0
+    for i in range(0, row_count):
+      NumberOfMessages = DataSet["NumberofMessages"][i]
+      subject = DataSet["Subject"][i]
+      root_Folder = outlook.Folders[str(DataSet["Gruppenfolder][i])].Folder[str(DataSet["Inbox"][i])]
+      processed_Folder = outlookFolders[str(DataSet["OutlookProcessedFolder"][i])]
+      Already_Processed = DataSet["OutlookProcessedFolder"][i]
+      relevant_messages = self.searchingSubjects(subject, root_Folder, AlreadyProcessed, NumberOfMessages)
+      move_to_explorer = DataSet["ExplorerFolder"][i]
+    
+    for msg in relevant_messages:
+      for attachment in msg.Attachments:
+        if attachment.FileName[-3:] == 'csv':
+          attachment.SaveASFile(os.path.join(move_to_explorer, attachment.FileName))
+        elif attachment.FileName[-3:] == 'xls':
+          attachment.SaveASFile(os.path.join(move_to_explorer, attachment.FileName))
+        elif attachment.FileName[-4:] == 'xlsx':
+          attachment.SaveASFile(os.path.join(move_to_explorer, attachment.FileName))
+        elif attachment.FileName[-4:] == 'xlsm':
+          attachment.SaveASFile(os.path.join(move_to_explorer, attachment.FileName))
+        else:
+          pass
+      if moved_counter <= NumberOfMessages:
+        msg.Move(processed_Folder)
+        moved_counter += 1
+
+    def sliceDataFrames(self, Indx):
+      df = self.DataFrameHolder[Indx]['Dataframe']
+      DF = df.reindex(columns = self.SlicingDataSet[Indx]['Given'])
+      DF.columns = self.SlicingDataSet[Indx]['Wished']
+      self.DataFramesSliced.append({'Filename': self.Filenames[Indx], 'Dataframe': DF})
+
+    def mergeFiles(self, direcotry, cut_off):
+      target_files = self.directoryFilelist(directory)
+      os.chdir(directory)
+      first_df = 0
+      ext_csv = ".csv"
+      ext_xls = ".xls"
+      ext_xlsx = ".xlsx"
+      for file in target_files:
+        file_path = direcotry + "\\" + file
+        
+        if ext_xls in file:
+          if cut_off > 0:
+            df_raw = pd.read_excel(file_path, encoding='unicode_escape', skiprows = cut_off)
+            df_raw.columns = df_raw.columns.str.strip()
+          else:
+            df_raw = pd.read_excel(file_path, encoding='unicode_escape')
+        
+        elif ext_xlsx in file:
+          if cut_off > 0:
+            df_raw = pd.read_excel(file_path, encoding='unicode_escape', skiprows = cut_off)
+            df_raw.columns = df_raw.columns.str.strip()
+          else:
+            df_raw = pd.read_excel(file_path, encoding='unicode_escape')
+
+        elif ext_csv:
+          if cut_off > 0:
+            df_raw = pd.read_csv(file_path, encoding='unicode_escape', sep= ';', skiprows = cut_off)
+            df_raw.columns = df_raw.columns.str.strip()
+          else:
+            df_raw = pd.read_csv(file_path, encoding='unicode_escape', sep= ';')
+        
+        first_df += 1
+        if first_df == 1:
+          df = df_raw.copy()
+        else:
+          df = df.append(df_raw, ignore_index = True)
+      if first_df >= 1:
+        val_dict = {'FIlename': file[0:12], 'Dataframe': df}
+        self.DataFrameHolder.append(val_dict)
+
+    def directoryFilelist(self, directory):
+      os.chdir(directory)
+      target_files = []
+      for file in glob.glob("*xls"):
+        target_files.append(file)
+      for file in glob.glob("*csv"):
+        target_files.append(file)
+      for file in glob.glob("*xlsx"):
+        target_files.append(file)
+      return target_files
+
+    def deleteFilelist(self, directory):
+      os.chdir(directory)
+      for f in os.listdir(directory):
+        if f == dir:
+          next
+        elif f != dir:
+          os.remove(f)
+
+    def IndexInfo(self, DataSet):
+      outlook = self.Outlook_Connector()
+      for i in range(1, 10):
+        root_Folder = outlook.Folders[str(DataSet["Gruppenfolder"])].Folders[str(i)]
+        print("Checking your designated Groupfolder: Index = {}, Folder = {}".format(i, root_Folder))
+
+    def removeEmptySpaceTrails(self, file_path = "SOme path", header_name = "ISIN")
+      all_files = os.listdir(file_path)
+      supported_extensions = ['.csv', '.xls', '.xlsx']
+      matching_files = [f for f in all_files if any(f.endswith(ext) for ext in supported_extensions)]
+      wished_name = "Copy of NAV_JB_Lakefield"
+
+      for indx, name in enumerate(matching_files):
+        if name.startswith(wished_name):
+          file_path = os.path.join(file_path, matching_files[indx])
+          file_extensions = os.path.splittext(file_path)[1]
+          if file_extension = '.csv':
+            df = pd.read_csv(file_path, delimiter=";")
+          else:
+            df = pd.read_excel(file_path, delimiter=";")
+          if header_name not in df.columns:
+            print(f"Columns {df.columns}")
+            rause ValueError(f"The header '{header_name}' does not exist in the file.")
+
+          df[header_name] = df[header_name].str.rstrip()
+          if file_extension == '.csv':
+            df.to_csv(file_path, index = False, sep=';')
+          else:
+            df.to_excel(file_path, index = False, sep= ';')
+        
+        else:
+          print("No matching file found for wished_name!")
+        
+
+            
+          
+                                                          

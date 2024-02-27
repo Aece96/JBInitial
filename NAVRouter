@@ -1,0 +1,87 @@
+import pyodbc
+
+class NAVRouter():
+  def __init__(self, DataSet, AccessAPI):
+    self.accessAPI = AccessAPI
+    self.NAVDataSet = DataSet
+    self.OutlookTable = 'OutlookTemplates'
+    self.OutlookInputs = 'OutlookTemplateInputs'
+    self.SlicingTable = 'SlicingTemplates'
+    self.SlicingInputsGive = 'FileSlicingHeaderGiven'
+    self.SlicingInputsWished = 'FileSlicingHeaderWished'
+
+    self.Outlook_inputs = []
+    self.SlicingInputs = []
+    self.Filenames = []
+    self.FileExtensions = []
+    self.cut_off = []
+
+    self.transformedDataSet = {}
+
+  def transformNAVInputs(self):
+    for NAVTemplateRecords in self.NAVDataSet:
+      self.Outlook_inputs.append(self.transformOutlookInputs(NAVTemplateRecords[0]))
+      self.SlicingInputs.append(self.transformSlicingInputs(NAVTemplateRecords[1]))
+      self.Filenames.append(self.NAVTemplateRecords[2])
+      if NAVTemplateRecords[3] != None:
+        self.FileExtensions.append('.' + NAVTemplateRecords[3])
+      else:
+        self.FileExtensions.append('.xlsx')
+      self.cut_off.append(NAVTemplateRecords[4])
+
+    self.transformedDataSet['Outlook'] = self.Outlook_inputs
+    self.transformedDataSet['SlicingInputs'] = self.SlicingInputs
+    self.transformedDataSet['Filenames'] = self.Filenames
+    self.transformedDataSet['FileExtension'] = self.FileExtensions
+    self.transformedDataSet['cut_off'] = self.cut_off
+
+    return self.transformedDataSet
+
+
+  def getInputHeaderPKless(self, TemplateName, tablename, TableHeaders):
+    PK = (', ').join(self.accessAPI.getAccessPrimaryKey(tablename))
+    ColumnNamesx = self.accessAPI.getAllColumnNames(tablename)
+    for i in TableHeaders:
+      if i == PK:
+        ColumnNamesx.pop(TableHeaders.index(i))
+    return ColumnNamesx
+
+
+  def transformOutputInputs(self, TemplateName):
+    Input_list = []
+    InputHeaders = self.accessAPI.getAllColumnNames(self.OutlookInputs)
+    InputHeadersPKless = self.InputHeadersPKless(TemplateName, self.OutlookInputs, InputHeaders)
+    record = self.accessAPI.getSpecificTableRecord(self.OutlookInputs, str(TemplateName)
+    try:
+      OutlookIDval = record[1]
+      Input = self.AccessAPI.getSpecificTableRecord(self.OutlookInputs, OutlookIDval)
+      for i in range(len(Input)):
+        if i == 0:
+          pass
+        else:
+          Input_list.append(Input[i])
+    except:
+      pass
+    val_dict = {key:value for key, value in zip(INputHeadersPKless, Input_list))
+    return val_dict
+
+
+  def transformSlicingInputs(self, TemplateName):
+    Input_list_Given = []
+    Input_list_Wished = []
+    record = self.accessAPI.getSpecificTableRecord(self.SlicingTable, str(TemplateName))
+    try:
+      SlicingIDval = record[1]
+      InputWished = self.accessAPI.getSpecificTableRecord(self.SlicingInputWished, SlicingIDval)
+      InputGiven = self.accessAPI.getSpecificTableRecord(self.SlicingInputGiven, SlicingIDval)
+      for i in range(len(InputWIshed)):
+        if i == 0:
+          pass
+        else:
+          if InputGiven[i] != None:
+            Input_list_Given.append(InputGiven[i])
+            Input_list_Wished.append(InputWished[i])
+    except:
+      pass
+    val_dict = {'Given': Input_list_Given, 'Wished': Input_list_Wished}
+    return val_dict

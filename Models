@@ -1,0 +1,226 @@
+class OutlookModel:
+  def __init__(self, DatabaseAPI):
+    self.tablename = 'OutlookTemplateInputs'
+    self.TemplateTable = 'OutlookTemplates'
+    self.accessAPI = DatabaseAPI
+
+    self.ColumnNames_Inputs = self.accessAPI.getAllColumnNames(self.tablename)
+    self.PK_name_inputs = self.getPrimarykeyName(self.tablename)
+    self.PK_val_list_templates = self.getPrimarykeyValues(self.TemplateTable)
+    self.TID = None
+
+  def getTemplateList(self):
+    return self.PK_val_list_templates
+
+  def getPrimarykeyValues(self, tablename):
+    PK_Name = (', ').join(self.accessAPI.getAccessPrimaryKey(tablename))
+    return self.accessAPI.getAllColumnValues(tablename, PK_Name)
+
+  def getPrimarykeyName(self, tablename):
+    return (', ').join(self.accessAPI.getAccessPrimaryKey(tablename))
+
+  def getTemplateInputs(self, selectedTemplate):
+    buffer_list = []
+    TID_Value = self.getTIDValue(selectedTemplate)
+    record = self.accessAPI.getSpecificTableRecord(self.tablename, TID_Value)
+    try:
+      for i in record:
+        buffer_list.append(i)
+    except:
+      return ["not available", "not available", "not available", "not available", "not available", "not available"]
+    for PrimaryKey in self.ColumnNames_Inputs:
+      if PrimaryKey == self.PK_name_Inputs:
+        removal_index = self.ColumnNames_Inputs.index(PrimaryKey)
+        buffer_list.pop(removal_index)
+    return buffer_list
+
+  def getTIDValue(self, TemplateName):
+    record = self.accessAPI.getSpecificTableRecord(self.TemplateTable, TemplateName)
+    self.TID = record[1]
+    return self.TID
+
+  def getTIDName(self, tablename):
+    return (', ').join(self.accessAPI.getAccessPrimaryKey(tablename))
+
+  def getTemplateNames(self):
+    return self.accessAPI.getAllColumnValues(self.TemplateTable, self.PK_val_list_templates)
+
+  def adaptTemplateInputs(self, TemplateName, val_list):
+    TIDValue = self.getTIDValue(TemplateName)
+    PK = self.PK_name_inputs
+    ColumnNamesx = self.accessAPI.getAllColumnNames(self.tablename)
+    index_removals = []
+
+    for i in self.ColumnNames_Inputs:
+      if i == PK:
+        ColumnNamesx.pop(self.ColumnNames_Inputs.index(i))
+
+    for empty in val_list:
+      if empty == "":
+        index_removals.append(val_list.index(empty))
+    for removal in index_removals:
+      ColumnNamesx.pop(removal)
+      val_list.pop(removal)
+
+    val_dict = {key:value for key, value in zip(ColumnNamesx, val_list)}
+    AdaptionDict = {'table': self.tablename, 'values': val_dict}
+    slef.accessAPI.UpdateSingleRecord(TIDValue, AdaptionDict)
+
+  def getInputHeadersPKless(self, TemplateName):
+    PK = self.PK_name_inputs
+    ColumnNamesx = self.accessAPI.getAllColumnNames(self.tablename)
+    for i in self.ColumnNames_Inputs:
+      if i == PK:
+        ColumnNamesx.pop(self.ColumnNames_Inputs.index(i))
+    return ColumnNamesx
+
+
+class NAVModel:
+  def __init__(self, DatabaseAPI):
+    self.accessAPI = DatabaseAPI
+    self.TemplateTable = 'NAVTemplates'
+    self.tablename = 'NAVTemplatesInputs'
+    self.ColumnNames_Inputs = self.accessAPI.getAllColumnNames(self.tablename)
+    self.PK_name_inputs = self.getPrimarykeyName(self.tablename)
+    self.NAVIDs = []
+
+  def getPrimarykeyName(self, tablename):
+    return (', ').join(self.accessAPI.getAccessPrimaryKey(tablename))
+
+  def getNAVIDValues(self,TemplateNames):
+    self.NAVIDs = []
+    record = self.accessAPI.getSpecificTableRecord(self.TemplateTable, TemplateNames)
+    for t in TemplateName:
+      record = self.accessAPI.getSpecificTableRecord(self.TemplateTable, t)
+      self.NAVIDs.append(record[1])
+    return self.NAVIDs
+
+  def getTemplateInputs(self, NAVIDs):
+    buffer_list = []
+    val_list = []
+    record_list = []
+    record = self.accessAPI.getSpecificTableRecord(self.tablename, NAVIDs)
+    try:
+      for i in record:
+        buffer_list.append(i)
+    except:
+      return "Something went wrong"
+
+    for PrimaryKey in self.COlumnNames_Inputs:
+      if PrimaryKey == self.PK_name_inputs:
+        removal_index = self.ColumnNames_Inputs.index(PrimaryKey)
+    for tupleX in buffer_list:
+      if val_list != []:
+        record_list.append(val_list)
+      val_list = []
+      for indx, val in enumerate(tupleX):
+        if indx != removal_index:
+          val_list.append(val)
+        else:
+          pass
+    record_list.append(val_list
+    return record_list
+
+  def getTemplateNames(self):
+    TableRecords = self.accessAPI.getAllTableValues('NAVTemplates')
+    values = []
+    for records in TableRecords:
+      counter = 0
+      val_list = []
+      for j in records:
+        if counter == 0:
+          val_list.append(j)
+        else:
+          pass
+        counter += 1
+      values.append(', '.join(val_list))
+      val_list = []
+    return values
+
+
+class TCVModel:
+  def __init__(self, DatabaseAPI):
+    self.accessAPI = DatabaseAPI
+    self.TablenameTemplates = None
+    self.TablenameInputs = None
+    self.TN = 'TemplateName'
+    self.TemplateNameWished = None
+    self.HeaderList = None
+    self.EntryValues = None
+    self.IDName = None
+    self.FreePrimaryKey = None
+    self.InputValues = None
+    self.ValueDict = None
+    self.TemplateValues = None
+    self.MainDict = None
+    self.DatabaseCreationRecords = []
+
+  def getProcessNames(self):
+    TableRecords = self.accessAPI.getAllTableValues('ProcessTable')
+    keys = []
+    values = []
+    for records in TableRecords:
+      counter = 0
+      val_list = []
+      for j in records:
+        if counter = 0:
+          keys.append(j)
+        else:
+          val_list.append(j)
+        counter += 1
+      values.append(', ').join(val_list))
+      val_list = []
+    counter2 = 0
+    self.OptionDict = dict.fromkeys(keys)
+    for key in self.OptionDict:
+      self.OptionDict[key] = values[counter2]
+      counter2 += 1
+    return values
+
+  def setTablenameTemplates(self, TemplatesTablename):
+    self.TablenameTemplates = TemplatesTablename
+
+  def setTablenameInputs(self, TablenameInputs):
+    self.TablenameInputs = TablenameInputs
+
+  def setHeaderList(self, Headers):
+    self.HeaderList = Headers
+
+  def setFreePrimaryKey(self, IDColumnName):
+    self.FreePrimaryKey = IDColumnName
+    self.FreePrimaryKey = str(self.FreePrimaryKey)
+
+  def setTemplateName(self, TemplateName):
+    self.TemplateNameWished = TemplateName
+
+  def setEntryValues(self, EntryValues):
+    self.EntryValues = EntryValues
+
+  def PopulateMainDict(self, IDName):
+    self.IDName = IDName
+    for i in range(len(self.TemplateNameWished)):
+      self.TemplateValeus = {self.TN: self.TemplateNameWished[i], self.IDName[i]: self.FreePrimaryKey}
+      self.MainDict = {'table': self.TablenameTemplates[i], 'values': self.TemplateValues}
+      self.DatabaseCreationRecords.append(self.MainDict)
+
+  def PopulateValDict(self, IDName):
+    self.IDName = IDName
+    for i in range(len(self.HeaderList)):
+      self.InputValues = dict(zip(self.HeaderList[i], self.EntryValues[i]))
+      self.InputValues.update({self.IDName[i]: self.FreePrimaryKey})
+      if self.TablenameInputs[i] == "NAVTemplatesInputs":
+        self.InputValues.update({"OutlookTemplates": self.TemplateNameWished[0]})
+        self.InputValues.update({"SlicingTemplates": self.TemplateNameWished[1]})
+      self.ValueDict = {'table': self.TablenameInputs[i], 'values': self.InputValues}
+      self.DatabaseCreationRecords.append(self.ValueDict)
+
+  def clearMainDict(self):
+    self.MainDict = None
+
+  def clearValDict(self):
+    self.ValDict = None
+
+  def CreateDatabaseEntry(self):
+    self.accessAPI.InsertMultipleRecords(self.DatabaseCreationRecords)
+    self.clearMainDict()
+    self.clearValDict()

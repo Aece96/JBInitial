@@ -1,0 +1,175 @@
+import pyodbc
+import pandas as pd
+import win32com.client
+
+class AccessAPI():
+  def __init__(self, filepathDB):
+    self.filepathDB = filepathDB
+    self.conn_str = self.openConnstr()
+    self.cursor = self.openConnection()
+
+  def openConnstr(self):
+    myPossibleDataSources = pyodbc.dataSources()
+    access_driver = myPossibleDataSources['MS Access Database']
+    filepath = self.filepathDB
+    conn_str = pyodbc.connect(driver=access_driver, dbq=filepath, autocommit=True)
+    return conn_str
+
+  def openConnection(self):
+    cursor = self.conn_str.cursor()
+    return cursor
+
+  def closeConnection(self):
+    self.cursor.close()
+
+
+  def InsertSingleRecord(self, Val_Dict):
+    table = Val_Dict["table"]
+    columns = ', '.join(Val_Dict["values"].keys())
+    old_values = list(Val_Dict["values"].values())
+    new_values = []
+    prefix ="'"
+    for x in old_values:
+      new_values.append(prefix + x + prefix)
+    query_values = ', '.join(new_values)
+    query=(
+          r"Insert into" + table + "("+columns+")Values"
+          r"(" + query_values + ")"
+    )
+    try:
+      self.cursor.execute(query)
+      self.cursor.commit()
+      SuccessMessage = "Single record inserted successfully"
+      print(SuccessMessage)
+      return SuccessMessage
+    except:
+      FailingMessage = "Single record could not be inserted. Please make sure the ID is unique"
+      print(FailingMessage)
+      return FailingMessage
+
+  def Insert MultipleRecords(self, Val_Dict_list):
+      SuccessCounter = 0
+      FailedCounter = 0
+      for entry in Val_Dict_list:
+        table = entry["table"]
+        columns = ', '.join(entry["values"].keys())
+        old_values = list(entry["values"].values()
+        new_values = []
+        prefix = "'"
+        for x in old_values:
+          new_values.append(prefix + x + prefix)
+        query_values = ', '.join(new_values)
+        query = (
+              r"Insert into " + table + "(" + columns + ") Values"
+              r"(" + query_values + ")"
+        )
+        try:
+          self.cursor.execute(query)
+          self.cursor.commit()
+          SuccessCounter += 1
+        except:
+          FailedCounter += 1
+    return "Number of entreis inserte successfully: {}. Number of entries inserted unsuccessfully: {}.".format(SuccessCounter, FailedCounter)
+
+  def UpdateSingleRecord(self, PK_val, Val_Dict):
+    PK_list = self.getAccessPrimaryKey(Val_Dict['table'])
+    if len(PK_list) > 1:
+      return print("more than one Primary Key; must be compound)
+    else:
+      PK = ', '.join(PK_list)
+      for key, value in Val_Dict['values'].items():
+        if value != None:
+          query = (
+                  r"UPDATE {} SET {} = ? WHERE {} = ?".format(Val_Dict['table'], key, PK)
+          )
+          self.cursor.execute(query, value, PK_val)
+          self.cursor.commit()
+        if value == None:
+          pass
+          
+    def DeleteSingleRecord(self, tablename, PK_name, PK_val):
+      query = "Delete * from {} Where {} = {}".format(tablename, PK_name, PK_val)
+      try:
+        self.cursor.execute(query)
+        self.cursor.commit()
+        SuccessMessage = "Record deleted"
+        return SuccessMessage
+      except:
+        FailingMessage = "No record with this primary key found."
+        return FailingMessage
+
+    def DeleteAll(self, tablename):
+      query = "Delete * from {}".format(tablename)
+      try:
+        self.cursor.execute(query)
+        self.cursor.commit()
+        SuccessMessage = "Records deleted"
+        return SuccessMessage
+      except:
+        FailingMessage = "No records in the table"
+        return FailingMessage
+
+    def getAllTableNames(self):
+      tableNames = []
+      for row in self.cursor.tables():
+        if row.table_type = 'TABLE':
+          tableNames.append(row.table_name)
+      return tableNames
+
+    def getAllColumnNames(self, tablename):
+      columnNames = []
+      for column in self.cursor.columns(tablename):
+        columnNames.append(column.column_name)
+      return columnNames
+
+    def getAllTableValeus(self, tablename):
+      query = "Select * from {}".format(tablename)
+      return self.cursor.execute(query).fetchall()
+
+    def getColumnValues(self, tablename, ColumnName):
+      df = self.getDataframeofTable(tablename)
+      return df[ColumnName]
+
+    def getSpecificTableRecord(self, tablename, PK_val):
+      PK_list = self.getAccessPrimaryKey(tablename)
+      query = "Select * from {} where {} = ?".format(tablename, PK_list[0])
+      try:
+        record = self.cursor.execute(query, PK_val).fetchone()
+        return record
+      except:
+        FailingMessage = "No record with this primary key found"
+        return FailingMessage
+
+    def getSpecificTableRecords(self, tablename, PK_vals):
+      PK_list = self.getAccessPrimaryKey(tablename)
+      records = []
+      for selected_PK in PK_vals:
+        query = "Select * from {} where {} = {}".format(tablename, PK_list[0], selected_PK)
+        try:
+          records.append(self.cursor.execute(query).fetchone())
+        except:
+          FailingMessage = "No record with this primary key found"
+          return FailingMessage
+      return records
+
+
+    def getDataframeofTable(self, tablename):
+      query = "Select * from {}".format(tablename)
+      df = pd.read_sql(query, self.conn_str)
+      return df
+
+    def getAllColumnValues(self, tablename, ColumnName):
+      df = self.getDataframeofTable(tablename)
+      column_values = df.loc[:,ColumnName]
+      return column_values
+
+    def getAccessPriamryKey(self, tablename):
+      db_engine = win32com.client.Dispatch("DAO.DBEngine.120")
+      db = db_engine.OpenDatabase(self.filepathDB)
+      tbd = db.TableDefs(tablename)
+      for indx in tbd.Indexes:
+        if indx.Primary:
+          PK_list = [fld.Name for fld in indx.Fields]
+      return PK_list
+      
+                     

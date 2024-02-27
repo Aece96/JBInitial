@@ -1,0 +1,58 @@
+class AccessKeyLogger():
+  def __init__(self, Process, DatabaseAPI):
+    self.DatabaseAPI = DatabaseAPI
+    self.Process = Process
+    self.SavedTemplateNames = []
+    self.SavedPrimaryKeyID = []
+
+  def checkProcessTemplateNames(self, TemplateNameWished):
+    self.SavedTemplateNames = []
+    for i in range(len(TemplateNameWished)):
+      if self.Process == "Outlook":
+        self.SavedTemplateNames.extend(self.DatabaseAPI.getAllColumnValues("OutlookTempaltes", "TemplateName").values.tolist())
+        if TemplateNameWisehd[i] in self.SavedTemplateNames:
+          return True
+        else:
+          return False
+          
+      elif self.Process == "Converter":
+        self.SavedTemplateNames.extend(self.DatabaseAPI.getAllColumnValues("SlicingTemplates", "TemplateName").values.tolist())
+        if TemplateNameWished[i] in self.SavedTemplateNames:
+          return True
+        else:
+          return False
+          
+      elif self.Process = "NAVProcess":
+        self.SavedTemplateNames.extend(self.DatabaseAPI.getAllColumnValues("SlicingTemplates", "TemplateName").values.tolist())
+        self.SavedTemplateNames.extend(self.DatabaseAPI.getAllColumnValues("OutlookTemplates", "TemplateName").values.tolist())
+        self.SavedTemplateNames.extend(self.DatabaseAPI.getAllColumnValues("NAVTemplates", "TemplateName").values.tolist())
+        if TemplateNameWished[i] in self.SavedTemplateNames:
+          return True
+        else:
+          return False
+          
+      else:
+        return "No valid Process selected"
+ 
+  def checkPrimaryKeyID(self):
+    self.SavedPrimaryKeyID = []
+    if self.Process == "Outlook":
+      self.SavedPrimaryKeyID.extend(self.DatabaseAPI.getAllColumnValues("OutlookTemplates", "OutlookID").values.tolist())
+      return max(self.SavedPrimaryKeyID) + 1
+    elif self.Process == "Converter":
+      pass
+      self.SavedPrimaryKeyID.extend(self.DatabaseAPI.getAllColumnValues("SlicingTemplates", "ID").values.tolist())
+    elif self.Process == "NAVProcess":
+      self.SavedPrimaryKeyID.extend(self.DatabaseAPI.getAllColumnValues("NAVTemplates", "NAVID").values.tolist())
+      self.SavedPrimaryKeyID.extend(self.DatabaseAPI.getAllColumnValues("SlicingTemplates", "ID").values.tolist())
+      self.SavedPrimaryKeyID.extend(self.DatabaseAPI.getAllColumnValues("OutlookTemplates", "OutlookID").values.tolist())
+
+
+
+  def setValidPrimaryKey(self, TemplateNameWished):
+    TemplateNameValid = self.checkProcessTemplateNames(TemplateNameWished)
+    FreePrimaryKey = self.checkPrimaryKeyID()
+    if TemplateNameValid:
+      return print("Wished Template Name already taken")
+    if TemplateNameValid == FAlse:
+      return FreePrimaryKey
